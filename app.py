@@ -2,17 +2,20 @@ import pandas as pd
 import re
 from pathlib import Path
 
+
 UPLOADS_DIR = Path("uploads")
 PROCESSADOS_DIR = Path("processados")
 
+UPLOADS_DIR.mkdir(exist_ok=True)
 PROCESSADOS_DIR.mkdir(exist_ok=True)
+
+
 
 LOJAS_VALIDAS = {
     "tenten",
     "casasdasmesas",
     "espacomoveis"
 }
-
 
 # =========================================
 # VALIDAR NOME DO ARQUIVO
@@ -90,6 +93,11 @@ def tratar_venda(
         "valor_total_compra",
         "valor_total_venda"
     ]
+    colunas_faltando = [col for col in colunas if col not in df.columns]
+
+    if colunas_faltando:
+        print(f"Colunas faltando: {colunas_faltando}")
+        return None
 
     df = df[colunas].copy()
 
@@ -113,6 +121,12 @@ def tratar_compra(
         "emiss_o",
         "valor_nota"
     ]
+    colunas_faltando = [col for col in colunas if col not in df.columns]
+
+    if colunas_faltando:
+        print(f"Colunas faltando: {colunas_faltando}")
+        return None
+        
 
     df = df[colunas].copy()
 
@@ -190,6 +204,9 @@ def main():
         try:
 
             categoria, df_saida = processar_arquivo(arquivo)
+
+            if df_saida is None:
+                continue
             if categoria == "venda":
                 lista_vendas.append(df_saida)
             else: 
@@ -219,9 +236,9 @@ def main():
         )
 
         print ("Arquivo consolidado de vendas criado!")
-            # =========================================
-    # CONSOLIDAR COMPRAS
-    # =========================================
+# =========================================
+# CONSOLIDAR COMPRAS
+# =========================================
 
     if lista_compras:
 
